@@ -1,0 +1,31 @@
+body {
+    background-color: black;
+    color: white;
+}
+
+nav {
+    display: flex;
+    border-bottom: 2px dotted white;
+    align-items: center;
+}
+
+nav h1 {
+    margin: 0 0.5rem;
+    color: #87cefa;
+}
+
+nav .spacer {
+    flex-grow: 1;
+}
+
+#statusdot {
+    background-color: #8f8f8f;
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    margin-right: 0.25rem;
+}
+
+* {
+    box-sizing: border-box;
+}
