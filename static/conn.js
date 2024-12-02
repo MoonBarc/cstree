@@ -5,6 +5,8 @@ const statuses = {
     "down": "#ff5757"
 }
 
+const TOTAL_LIGHTS = 150
+
 function setStatus(to) {
     const s = document.getElementById("status")
     const d = document.getElementById("statusdot")
@@ -20,7 +22,7 @@ function setStatus(to) {
 function render(trimage, ctx, lights) {
     const lrad = 8;
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-    ctx.drawImage(trimage, 0, 0)
+    ctx.drawImage(trimage, 20, 0)
 
     let rowi = 0;
     let row = 1;
@@ -32,8 +34,8 @@ function render(trimage, ctx, lights) {
         ctx.beginPath()
         ctx.fillStyle = light
         ctx.ellipse(
-            (trimage.width / 2) - (row * lrad) + (rowi * lrad * 5),
-            row * lrad * 4.1,
+            (trimage.width / 2) + 37 - (row * lrad) + (rowi * lrad * 2),
+            (row * lrad * 2.8) - (rowi * 1.5),
             lrad, lrad, 0, 0, 360)
         ctx.fill()
         rowi++
@@ -50,8 +52,13 @@ async function main() {
     trimage.src = "/tree.png"
     trimage.addEventListener("load", () => {
         canvas.height = trimage.height
-        canvas.width = trimage.width
-        render(trimage, ctx, ["#ff0000", "#ff00ff", "#00ff00", "#ff0000", "#ff0000", "#ff0000", "#ff0000", "#0f0fff"])
+        canvas.width = trimage.width + 40
+        const lightstates = []
+        const colors = ["#ff00ff", "#00ff00", "#ff0000", "#0f0fff"]
+        for (let i = 0; i < TOTAL_LIGHTS; i++) {
+            lightstates[i] = colors[Math.floor(Math.random() * colors.length)]
+        }
+        render(trimage, ctx, lightstates)
     })
 }
 

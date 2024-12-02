@@ -1,3 +1,8 @@
+:root {
+    --accent: #87cefa;
+    --sadge: #8f8f8f;
+}
+
 body {
     background-color: black;
     color: white;
@@ -11,7 +16,7 @@ nav {
 
 nav h1 {
     margin: 0 0.5rem;
-    color: #87cefa;
+    color: var(--accent)
 }
 
 nav .spacer {
@@ -19,13 +24,32 @@ nav .spacer {
 }
 
 #statusdot {
-    background-color: #8f8f8f;
+    background-color: var(--sadge);
     width: 10px;
     height: 10px;
     border-radius: 100%;
     margin-right: 0.25rem;
 }
 
+button {
+    background-color: var(--accent);
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+}
+
+button:disabled {
+    background-color: var(--sadge);
+    cursor: default;
+    color: white;
+}
+
+li {
+    margin-top: 0.5rem;
+}
+
 * {
+    font-family: 'Times New Roman', Times, serif;
     box-sizing: border-box;
 }

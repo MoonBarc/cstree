@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit code for the CS Tree</title>
+    <script>
+        async function main() {
+            const ni = document.getElementById("nameinfo")
+            const btn = document.getElementById("uploadbtn")
+            const req = await fetch("/name")
+            const fullName = await req.text()
+            if (req.ok) {
+                ni.innerText = `(you're submitting as ${fullName})`
+                btn.disabled = false
+            } else {
+                ni.innerText = "Failed to authenticate. Please make sure you're on your school computer!"
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", main)
+    </script>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <nav>
+        <h1>EA CS Christmas Tree <span style="color: white !important;">/ submit code</span></h1>
+    </nav> 
+    <main style="display: flex; align-items: center; flex-direction: column;">
+        <h1 style="margin-bottom: 0;">The tree is open.</h1>
+        <p style="max-width: 40rem; text-align: center;">
+            Anyone can write code to control the lights on the Christmas tree!
+            Please read the guide to learn about the library used to control it before uploading your code to ensure it has a chance of working.
+
+            <strong>If you have any questions, please ask Lawson!</strong>
+        </p>
+        <form action="/upload" method="POST" style="max-width: 50rem;">
+            <ol>
+                <li>
+                    <label>
+                        Select your Python file:
+                        <input type="file" required accept=".py" />
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        Give it a name:
+                        <input type="text" required placeholder="beautiful light show #7" />
+                    </label>
+                </li>
+                <li>
+                    <button id="uploadbtn" disabled type="submit">Upload program!</button>
+                </li>
+                <span id="nameinfo">Authenticating...</span>
+            </ol>
+            <p>If your program doesn't work as expected, you can remove it at any time (from this computer only).</p>
+            <p>Please note: If your program crashes during execution, it will automatically be removed.</p>
+            <p>Your program will also be removed if it's obnoxious, and Mr. Davis will find you.</p>
+        </form>
+    </main>
+</body>
+</html>
