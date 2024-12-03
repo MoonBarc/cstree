@@ -1,5 +1,10 @@
 # a comma separated list of email addresses in the format
 # Person A <a@example.com>, Person B <b@example.com>, ...
-directory.csv
+/directory.csv
 
-tree.db
+# dev db
+/tree.db
+
+# binaries and outputs
+/treed
+/pi.tar.xz

@@ -35,7 +35,7 @@ function render(trimage, ctx, lights) {
         ctx.fillStyle = light
         ctx.ellipse(
             (trimage.width / 2) + 37 - (row * lrad) + (rowi * lrad * 2),
-            (row * lrad * 2.8) - (rowi * 1.5),
+            (row * lrad * 2.8) - ((row-rowi-1) * 1.5),
             lrad, lrad, 0, 0, 360)
         ctx.fill()
         rowi++
@@ -49,6 +49,41 @@ async function main() {
     const canvas = document.getElementById("treestatus")
     const ctx = canvas.getContext("2d")
     const trimage = new Image()
+    let loaded = false
+    const events = new EventSource("/events")
+
+    events.onmessage = (e) => {
+        if (!loaded) {
+            return
+        }
+        const d = JSON.parse(e.data)
+        if (d.Ty == "render") {
+            const colors = d.Data.colors
+            const bytes = Uint8Array.from(atob(colors), c => c.charCodeAt(0))
+            const stringColors = []
+            for (let i = 0; i < bytes.length; i += 4) {
+                let str = "#"
+                for (let j = 0; j < 4; j++) {
+                    str += bytes[i + (3-j)].toString(16).padStart(2, "0")
+                }
+                stringColors[149-(i/4)] = str
+            }
+            render(trimage, ctx, stringColors)
+        }
+        if (d.Ty == "info") {
+            document.getElementById("codetitle").innerText = `"${d.Data.title}"`
+            document.getElementById("author").innerText = d.Data.author
+        }
+    }
+
+    events.onopen = (_e) => {
+        setStatus("connected")
+    }
+
+    events.onerror = (_e) => {
+        setStatus("connecting...")
+    }
+
     trimage.src = "/tree.png"
     trimage.addEventListener("load", () => {
         canvas.height = trimage.height
@@ -59,6 +94,7 @@ async function main() {
             lightstates[i] = colors[Math.floor(Math.random() * colors.length)]
         }
         render(trimage, ctx, lightstates)
+        loaded = true
     })
 }
 

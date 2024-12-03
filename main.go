@@ -5,16 +5,24 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
-	"time"
+	"os"
 
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
 
+var TrDB TreeDB
+
 func main() {
 	log.Println("the tree daemon is up!")
 
-	db, err := sql.Open("sqlite3", "./tree.db")
+	db_loc := os.Getenv("DB_LOCATION")
+	if db_loc == "" {
+		log.Println("warning: using development DB location. ideally set DB_LOCATION")
+		db_loc = "./tree.db"
+	}
+
+	db, err := sql.Open("sqlite3", db_loc)
 	if err != nil {
 		log.Fatalln("failed to open DB connection", err)
 	}
@@ -31,16 +39,20 @@ func main() {
 
 	defer conn.Close()
 
-	// treedb := Prepare(conn)
+	TrDB = Prepare(conn)
 
-	directory := ReadDirectory()
+	ReadDirectory()
 
 	r := mux.NewRouter()
 
+	r.Path("/upload").Methods("POST").HandlerFunc(UploadFile)
+	r.Path("/events").HandlerFunc(Monitor)
+
 	r.Path("/name").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		name, err := GetName(directory, r)
+		name, err := GetName(r)
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
+			http.Error(w, "name not found", http.StatusNotFound)
+			log.Println("error finding name", r.RemoteAddr, err)
 			return
 		}
 
@@ -50,11 +62,19 @@ func main() {
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
 
 	srv := &http.Server{
-		Handler:      r,
-		Addr:         "0.0.0.0:4242",
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		Handler: r,
+		Addr:    "0.0.0.0:4242",
+		// WriteTimeout: 15 * time.Second,
+		// ReadTimeout:  15 * time.Second,
 	}
+
+	SetupLEDStrip()
+
+	// listen to the internal socket
+	go ListenSocket()
+
+	// start queue
+	go ManageQueue()
 
 	log.Fatal(srv.ListenAndServe())
 }

@@ -11,8 +11,9 @@ import (
 )
 
 
+var Directory map[string]string
 
-func ReadDirectory() map[string]string {
+func ReadDirectory() {
 	csv, err := fs.ReadFile(os.DirFS("."), "directory.csv")
 	if err != nil {
 		log.Fatalln("failed to read directory file", err)
@@ -30,23 +31,32 @@ func ReadDirectory() map[string]string {
 		directory[strings.ToLower(email)] = name
 	}
 
-	return directory
+	Directory = directory
 }
 
-func GetName(directory map[string]string, r *http.Request) (string, error) {
-	hostname, err := net.LookupAddr(strings.Split(r.RemoteAddr, ":")[0])
+func GetName(r *http.Request) (string, error) {
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return "", err
+	}
+
+	hostname, err := net.LookupAddr(ip)
 
 	if err != nil {
 		return "", err
 	}
 
 	name := strings.Split(hostname[0], ".")[0]
+	if name == "localhost" {
+		return "Test User", nil
+	}
+
 	parts := strings.Split(name, "-")
 	if len(parts) != 2 {
 		return "", errors.New("invalid hostname")
 	}
 	username := strings.ToLower(parts[1])
-	full_name, found := directory[username]
+	full_name, found := Directory[username]
 
 	if !found {
 		return "", errors.New("username not in directory")

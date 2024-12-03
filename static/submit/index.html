@@ -34,18 +34,18 @@
 
             <strong>If you have any questions, please ask Lawson!</strong>
         </p>
-        <form action="/upload" method="POST" style="max-width: 50rem;">
+        <form action="/upload" method="post" enctype="multipart/form-data" style="max-width: 50rem;">
             <ol>
                 <li>
                     <label>
                         Select your Python file:
-                        <input type="file" required accept=".py" />
+                        <input type="file" name="pyfile" required accept=".py" />
                     </label>
                 </li>
                 <li>
                     <label>
                         Give it a name:
-                        <input type="text" required placeholder="beautiful light show #7" />
+                        <input type="text" name="name" required placeholder="beautiful light show #7" />
                     </label>
                 </li>
                 <li>
