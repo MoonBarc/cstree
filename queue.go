@@ -7,7 +7,7 @@ import (
 )
 
 var QueueMutex sync.Mutex
-var Queue []int64 = make([]int64, 1)
+var Queue []int64 = make([]int64, 0)
 
 func RunQueue() {
 	var program *Program

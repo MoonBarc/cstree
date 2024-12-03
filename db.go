@@ -89,7 +89,7 @@ func extractProgram(row *sql.Rows, full bool) Program {
 }
 
 func extractPrograms(rows *sql.Rows) []Program {
-	progs := make([]Program, 5)
+	progs := make([]Program, 0)
 
 	for rows.Next() {
 		progs = append(progs, extractProgram(rows, false))
