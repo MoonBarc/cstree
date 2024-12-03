@@ -1,6 +1,6 @@
 import cstree
 
-lights = [0xed75fa55] * 150
+lights = [0xed75fa] * 150
 i = 0
 while True:
     def j(i):

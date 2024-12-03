@@ -30,6 +30,6 @@ def wait():
     time.sleep(1/15)
 
 # convenience color definitions
-RED = 0xff0000ff
-GREEN = 0x00ff00ff
-BLUE = 0x0000ffff
+RED = 0xff0000
+GREEN = 0x00ff00
+BLUE = 0x0000ff

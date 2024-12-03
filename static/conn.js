@@ -63,7 +63,7 @@ async function main() {
             const stringColors = []
             for (let i = 0; i < bytes.length; i += 4) {
                 let str = "#"
-                for (let j = 0; j < 4; j++) {
+                for (let j = 1; j < 4; j++) {
                     str += bytes[i + (3-j)].toString(16).padStart(2, "0")
                 }
                 stringColors[149-(i/4)] = str
