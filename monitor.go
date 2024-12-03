@@ -24,7 +24,12 @@ func BroadcastEvent(ev Event) {
 	ConnsMutex.Lock()
 	defer ConnsMutex.Unlock()
 	for _, conn := range Conns {
-		conn.Rx <- ev
+		select {
+		case conn.Rx <- ev:
+		default:
+			// couldn't keep up :(
+			close(conn.Rx)
+		}
 	}
 }
 
@@ -59,7 +64,7 @@ func (c *Conn) SendInfo() {
 
 func Monitor(w http.ResponseWriter, r *http.Request) {
 	conn := Conn{
-		Rx: make(chan Event, 10),
+		Rx: make(chan Event, 20),
 	}
 
 	AddConnection(r.RemoteAddr, &conn)
@@ -82,7 +87,11 @@ func Monitor(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		select {
-		case event := <-conn.Rx:
+		case event, ok := <-conn.Rx:
+			if !ok {
+				log.Println("too slow")
+				return
+			}
 			// JSON encode the event
 			data, err := json.Marshal(event)
 			if err != nil {
