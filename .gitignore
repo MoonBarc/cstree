@@ -8,3 +8,6 @@
 # binaries and outputs
 /treed
 /pi.tar.xz
+
+# mac
+.DS_Store
