@@ -34,7 +34,7 @@ func SetupLEDStrip() {
 func SetLEDs(states []byte) error {
 	ls := leds.Leds(0)
 	for i := 0; i < len(states); i += 4 {
-		ls[i/4] = binary.NativeEndian.Uint32(states[i : i+4])
+		ls[i/4] = binary.BigEndian.Uint32(states[i : i+4])
 	}
 	return leds.Render()
 }
