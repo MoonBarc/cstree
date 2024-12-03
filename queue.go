@@ -7,7 +7,7 @@ import (
 )
 
 var QueueMutex sync.Mutex
-var Queue []int64
+var Queue []int64 = make([]int64, 1)
 
 func RunQueue() {
 	var program *Program
@@ -43,6 +43,13 @@ func RunQueue() {
 }
 
 func ManageQueue() {
+	progs, err := TrDB.AllPrograms()
+	if err != nil {
+		log.Fatalln("failed to load programs into queue", err)
+	}
+	for i, p := range progs {
+		Queue[i] = p.id
+	}
 	for {
 		RunQueue()
 		// give it a break
