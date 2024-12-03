@@ -47,8 +47,8 @@ func ManageQueue() {
 	if err != nil {
 		log.Fatalln("failed to load programs into queue", err)
 	}
-	for i, p := range progs {
-		Queue[i] = p.id
+	for _, p := range progs {
+		Queue = append(Queue, p.id)
 	}
 	for {
 		RunQueue()
