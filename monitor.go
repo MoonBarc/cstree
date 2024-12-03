@@ -52,7 +52,9 @@ func InfoEvent() Event {
 }
 
 func (c *Conn) SendInfo() {
-	c.Rx <- InfoEvent()
+	if ActiveProgram != nil {
+		c.Rx <- InfoEvent()
+	}
 }
 
 func Monitor(w http.ResponseWriter, r *http.Request) {
