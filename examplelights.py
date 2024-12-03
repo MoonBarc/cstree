@@ -6,10 +6,10 @@ while True:
     def j(i):
         return i % 150
 
-    lights[j(i)] = cstree.RED
+    lights[j(i)] = cstree.BLUE
     lights[j(i + 1)] = cstree.GREEN
     lights[j(i + 2)] = cstree.GREEN
-    lights[j(i + 3)] = cstree.BLUE
+    lights[j(i + 3)] = cstree.RED
 
     cstree.render(lights)
     cstree.wait()

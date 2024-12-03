@@ -95,6 +95,10 @@ func extractPrograms(rows *sql.Rows) []Program {
 		progs = append(progs, extractProgram(rows, false))
 	}
 
+	if err := rows.Err(); err != nil {
+		log.Println("error during rows iteration", err)
+	}
+
 	return progs
 }
 
