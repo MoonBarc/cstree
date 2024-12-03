@@ -23,6 +23,10 @@ func SetupLEDStrip() {
 	if err != nil {
 		log.Fatalln("failed to get device", err)
 	}
+	err = dev.Init()
+	if err != nil {
+		log.Fatalln("failed to init device", err)
+	}
 
 	leds = dev
 }
