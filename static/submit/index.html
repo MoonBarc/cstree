@@ -13,6 +13,10 @@
             if (req.ok) {
                 ni.innerText = `(you're submitting as ${fullName})`
                 btn.disabled = false
+            } else if (req.status == 418) {
+                // revert to manually collecting name
+                ni.style.display = "none"
+                document.getElementById("manualAuthorCollection").style.display = "block"
             } else {
                 ni.innerText = "Failed to authenticate. Please make sure you're on your school computer!"
             }
@@ -46,6 +50,12 @@
                     <label>
                         Give it a name:
                         <input type="text" name="name" required placeholder="beautiful light show #7" />
+                    </label>
+                </li>
+                <li id="manualAuthorCollection" style="display: none;">
+                    <label>
+                        Enter your name:
+                        <input type="text" name="author" required />
                     </label>
                 </li>
                 <li>

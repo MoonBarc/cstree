@@ -16,7 +16,7 @@ var leds *ws2811.WS2811
 
 func SetupLEDStrip() {
 	opt := ws2811.DefaultOptions
-	opt.Channels[0].Brightness = 128
+	opt.Channels[0].Brightness = 255
 	opt.Channels[0].LedCount = width * height
 
 	dev, err := ws2811.MakeWS2811(&opt)

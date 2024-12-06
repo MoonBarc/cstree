@@ -34,7 +34,24 @@ func ReadDirectory() {
 	Directory = directory
 }
 
+func CoolMode() bool {
+	return os.Getenv("COOL_MODE") == "yes"
+}
+
 func GetName(r *http.Request) (string, error) {
+	if !CoolMode() {
+		// revert to boring mode
+		name := r.FormValue("author")
+
+		if len(name) <= 1 {
+			return "", errors.New("name too short")
+		} else if len(name) > 70 {
+			return "", errors.New("name too long")
+		}
+
+		return name, nil
+	}
+
 	ip, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		return "", err

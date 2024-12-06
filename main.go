@@ -49,6 +49,11 @@ func main() {
 	r.Path("/events").HandlerFunc(Monitor)
 
 	r.Path("/name").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !CoolMode() {
+			http.Error(w, "not working rn", http.StatusTeapot)
+			return
+		}
+
 		name, err := GetName(r)
 		if err != nil {
 			http.Error(w, "name not found", http.StatusNotFound)
