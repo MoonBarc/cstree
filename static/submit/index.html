@@ -16,7 +16,7 @@
             } else if (req.status == 418) {
                 // revert to manually collecting name
                 ni.style.display = "none"
-                document.getElementById("manualAuthorCollection").style.display = "block"
+                document.getElementById("manualAuthorCollection").style.display = "list-item"
                 btn.disabled = false
             } else {
                 ni.innerText = "Failed to authenticate. Please make sure you're on your school computer!"
