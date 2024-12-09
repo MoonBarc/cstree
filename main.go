@@ -47,6 +47,12 @@ func main() {
 
 	r.Path("/upload").Methods("POST").HandlerFunc(UploadFile)
 	r.Path("/events").HandlerFunc(Monitor)
+	r.Path("/skip").Methods("POST").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		prog := ActiveProgram.name
+		SkipProgram <- true
+
+		w.Write([]byte("skipped " + prog))
+	})
 
 	r.Path("/name").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !CoolMode() {

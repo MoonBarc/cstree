@@ -10,7 +10,6 @@ connection = socket.socket(socket.AddressFamily.AF_UNIX, socket.SocketKind.SOCK_
 
 def _private_connect():
     connection.connect("/run/cstree.sock")
-    pass
 
 def render(lights: list[int]):
     """

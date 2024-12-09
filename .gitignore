@@ -9,5 +9,8 @@
 /treed
 /pi.tar.xz
 
+# working socket
+*.sock
+
 # mac
 .DS_Store

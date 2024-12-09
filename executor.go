@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"encoding/binary"
 	"log"
-	"net"
 	"os"
 	"path"
 	"time"
@@ -14,62 +12,7 @@ import (
 )
 
 var ActiveProgram *Program
-
-const sockAddr = "/tmp/cstree.sock"
-const magic = 0x1999
-
-// 2 = magic number
-// 4*150 = 4 32bit colors
-const packetLen = 2 + 4*150
-
-func DealWithSocket(c net.Conn) {
-	log.Println("connection on socket!")
-	defer c.Close()
-OuterLoop:
-	for {
-		buf := make([]byte, packetLen)
-		bytesRead := 0
-		for bytesRead < packetLen {
-			n, err := c.Read(buf[bytesRead:])
-			if err != nil {
-				log.Println("socket read err", err)
-				break OuterLoop
-			}
-			bytesRead += n
-		}
-		attempted_magic := binary.LittleEndian.Uint16(buf[0:2])
-		if attempted_magic != magic {
-			log.Println("magic wrong, got", attempted_magic)
-			break
-		}
-
-		// got a command!
-		BroadcastEvent(Event{
-			Ty: "render",
-			Data: map[string]any{
-				"colors": buf[2:],
-			},
-		})
-		SetLEDs(buf[2:])
-	}
-	log.Println("disconnect from socket")
-}
-
-func ListenSocket() {
-	_ = os.Remove(sockAddr)
-	l, err := net.Listen("unix", sockAddr)
-	if err != nil {
-		log.Fatalln("failed to listen on socket", err)
-	}
-
-	for {
-		fd, err := l.Accept()
-		if err != nil {
-			log.Fatalln("couldn't listen to socket??", err)
-		}
-		go DealWithSocket(fd)
-	}
-}
+var SkipProgram chan bool
 
 // can't believe go doesn't have a copy function
 func copy(in, out string) {
@@ -101,6 +44,7 @@ func ExecuteProgram(program *Program) {
 	}
 
 	containerDir, err := os.MkdirTemp("", "cstree-container")
+	log.Println("tmp=", containerDir)
 	if err != nil {
 		log.Fatalln("failed to make temp dir", err)
 	}
@@ -165,28 +109,32 @@ func ExecuteProgram(program *Program) {
 		kill()
 	case <-timer.C:
 		kill()
+	case <-SkipProgram:
+		log.Println("skipping current program...")
+		kill()
 	}
 
-	// // salvage logs
-	// logs, err := cli.ContainerLogs(ctx, c.ID, container.LogsOptions{
-	// 	ShowStdout: true,
-	// 	ShowStderr: true,
-	// })
+	// salvage logs
+	logs, err := cli.ContainerLogs(ctx, c.ID, container.LogsOptions{
+		ShowStdout: true,
+		ShowStderr: true,
+	})
 
-	// if err != nil {
-	// 	log.Println("warn, couldn't get logs for container", c.ID, err)
-	// } else {
-	// 	// persist logs
-	// 	defer logs.Close()
-	// 	betterFile, err := os.OpenFile("/tmp/cstree-"+c.ID+"-log.json", os.O_CREATE|os.O_WRONLY, 0o644)
+	if err != nil {
+		log.Println("warn, couldn't get logs for container", c.ID, err)
+	} else {
+		// persist logs
+		defer logs.Close()
+		os.Stdout.ReadFrom(logs)
+		// 	betterFile, err := os.OpenFile("/tmp/cstree-"+c.ID+"-log.json", os.O_CREATE|os.O_WRONLY, 0o644)
 
-	// 	if err != nil {
-	// 		log.Println("persisting logs failed", err)
-	// 	}
+		// 	if err != nil {
+		// 		log.Println("persisting logs failed", err)
+		// 	}
 
-	// 	defer betterFile.Close()
-	// 	betterFile.ReadFrom(logs)
-	// }
+		// 	defer betterFile.Close()
+		// 	betterFile.ReadFrom(logs)
+	}
 
 	// remove container
 	err = cli.ContainerRemove(ctx, c.ID, container.RemoveOptions{})
