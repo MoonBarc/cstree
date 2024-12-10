@@ -14,7 +14,8 @@ type Event struct {
 }
 
 type Conn struct {
-	Rx chan Event
+	Rx   chan Event
+	addr string
 }
 
 var Conns map[string]*Conn = make(map[string]*Conn)
@@ -29,6 +30,7 @@ func BroadcastEvent(ev Event) {
 		default:
 			// couldn't keep up :(
 			close(conn.Rx)
+			RemoveConnection(conn.addr)
 		}
 	}
 }
@@ -64,7 +66,8 @@ func (c *Conn) SendInfo() {
 
 func Monitor(w http.ResponseWriter, r *http.Request) {
 	conn := Conn{
-		Rx: make(chan Event, 20),
+		Rx:   make(chan Event, 20),
+		addr: r.RemoteAddr,
 	}
 
 	AddConnection(r.RemoteAddr, &conn)
