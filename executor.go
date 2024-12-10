@@ -12,7 +12,7 @@ import (
 )
 
 var ActiveProgram *Program
-var SkipProgram chan bool
+var SkipProgram chan bool = make(chan bool, 5)
 
 // can't believe go doesn't have a copy function
 func copy(in, out string) {
